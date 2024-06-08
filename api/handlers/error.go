@@ -1,15 +1,26 @@
 package handlers
 
-import "net/http"
+import (
+	"net/http"
+)
 
-// Generic ErrorResponse
+// ErrorResponse: Generic ErrorResponse
 type ErrorResponse struct {
 	StatusCode int    `json:"status"`
 	Error      string `json:"detail"`
 	Message    string `json:"message,omitempty"`
 }
 
-func NewErrorResponse(err ErrorResponse) *ErrorResponse {
+// NewDefaultErrorResponse: for default errors that need no override of the message
+func NewDefaultErrorResponse(err ErrorResponse) *ErrorResponse {
+	return &err
+}
+
+// NewErrorResponse: customized error messages
+func NewErrorResponse(err ErrorResponse, msg string) *ErrorResponse {
+	if msg != "" {
+		err.Message = msg
+	}
 	return &err
 }
 

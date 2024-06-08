@@ -12,7 +12,13 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	var req CreateAccountRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		render.Status(r, http.StatusBadRequest)
-		render.Render(w, r, NewErrorResponse(ErrBadRequest))
+		render.Render(w, r, NewDefaultErrorResponse(ErrBadRequest))
+		return
+	}
+
+	if errRes := req.Validate(); errRes != nil {
+		render.Status(r, http.StatusBadRequest)
+		render.Render(w, r, errRes)
 		return
 	}
 
@@ -20,5 +26,5 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 
 	//TODO ServiceMethod to Validate & Save Account to DB
 
-	render.Status(r, http.StatusCreated) //Empty response is ok
+	w.WriteHeader(http.StatusCreated) //Empty response is ok
 }
