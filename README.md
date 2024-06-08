@@ -1,4 +1,4 @@
-# Account Transfer API
+# Account-to-Account Transfer API
 
 ## Description
 
@@ -7,8 +7,14 @@ transaction details and querying account balances.
 A postgres database will be used to maintain transaction logs and account states.
 
 ## Assumptions
-Consider the currency is the same for all accounts.
-No need to implement authn or authz
+
+- Consider the currency is the same for all accounts.
+- No need to implement authn or authz
+
+## Installation
+
+Assuming:
+- Docker installed locally
 
 ## API Specifications
 
@@ -43,3 +49,25 @@ system should then process these transactions to update the account balances in 
 }
 ```
 Expected response is the transaction body, with a suitable http code.
+
+## Architecture
+
+### Services
+
+- All business logic will be organized into packages here
+- All domain models will also be maintained here
+- DB Access layer utilities will also be kept here
+
+E.g
+- AccountService
+    - CreateAccount
+    - GetAccount
+- TransactionService
+    - GetTransaction
+
+### Handlers
+
+- All HTTP response-handling & transformation of biz-logic responses to HTTP Errors or statuses will be done in this layer
+
+### Middleware
+Any router middleware common to many routes will be kept here for handling HTTP request/responses.

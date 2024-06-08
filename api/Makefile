@@ -1,5 +1,9 @@
 build:
-	go build .
+	go build cmd/.
 
 run:
-	go run ./main.go
+	go run ./cmd/main.go
+
+update-vendor:
+	go mod tidy
+	go mod vendor
