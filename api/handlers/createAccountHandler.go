@@ -1,22 +1,43 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"aeshanw.com/accountApi/api/models"
+	accountservice "aeshanw.com/accountApi/api/services/AccountService"
 	"github.com/go-chi/render"
 )
 
-func CreateAccount(w http.ResponseWriter, r *http.Request) {
-	var req CreateAccountRequest
+// AccountService defines the methods for interacting with the account service.
+// type AccountService interface {
+// 	// Define methods for interacting with the database
+// 	CreateAccount(ctx context.Context, req models.CreateAccountRequest) (*AccountModel, error)
+// }
+
+// Handlers contains the HTTP handlers and dependencies.
+type AccountHandler struct {
+	db *sql.DB
+}
+
+// NewAccountHandler creates a new instance of Handlers with the provided dependencies.
+func NewAccountHandler(db *sql.DB) *AccountHandler {
+	return &AccountHandler{
+		db: db,
+	}
+}
+
+func (ah *AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
+	var req models.CreateAccountRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.Render(w, r, NewDefaultErrorResponse(ErrBadRequest))
 		return
 	}
 
-	if errRes := req.Validate(); errRes != nil {
+	if errRes := ValidateCreateAccountRequest(req); errRes != nil {
 		render.Status(r, http.StatusBadRequest)
 		render.Render(w, r, errRes)
 		return
@@ -24,7 +45,18 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("req: %v\n", req)
 
+	ctx := r.Context()
+
 	//TODO ServiceMethod to Validate & Save Account to DB
+	err := accountservice.CreateAccount(ctx, ah.db, req)
+	if err != nil {
+		//TODO handle error
+		render.Status(r, http.StatusBadRequest)
+		render.Render(w, r, NewErrorResponse(ErrBadRequest, err.Error()))
+		return
+	}
+	//TODO replace with logger
+	fmt.Printf("account-model created: %d\n", req.AccountID)
 
 	w.WriteHeader(http.StatusCreated) //Empty response is ok
 }

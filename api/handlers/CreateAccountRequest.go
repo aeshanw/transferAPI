@@ -1,15 +1,17 @@
 package handlers
 
-type CreateAccountRequest struct {
-	AccountID      int64  `json:"account_id"`
-	InitialBalance string `json:"initial_balance"`
-}
+import "aeshanw.com/accountApi/api/models"
 
-func (car *CreateAccountRequest) Validate() *ErrorResponse {
-	if car.AccountID == 0 {
+// type CreateAccountRequest struct {
+// 	AccountID      int64  `json:"account_id"`
+// 	InitialBalance string `json:"initial_balance"`
+// }
+
+func ValidateCreateAccountRequest(req models.CreateAccountRequest) *ErrorResponse {
+	if req.AccountID == 0 {
 		return NewErrorResponse(ErrBadRequest, "invalid AccountID")
 	}
-	if car.InitialBalance == "" {
+	if req.InitialBalance == "" {
 		return NewErrorResponse(ErrBadRequest, "InitialBalance is empty")
 	}
 	return nil

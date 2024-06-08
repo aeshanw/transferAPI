@@ -77,8 +77,10 @@ func TestCreateAccount(t *testing.T) {
 			// Create a ResponseRecorder to capture the response
 			rr := httptest.NewRecorder()
 
+			ah := NewAccountHandler(nil)
+
 			// Call the handler
-			handler := http.HandlerFunc(CreateAccount)
+			handler := http.HandlerFunc(ah.CreateAccount)
 			handler.ServeHTTP(rr, req)
 
 			// Check the status code

@@ -1,8 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
+	"os"
+
+	_ "github.com/lib/pq"
 
 	"aeshanw.com/accountApi/api/handlers"
 	"github.com/go-chi/chi/v5"
@@ -11,6 +15,19 @@ import (
 )
 
 func main() {
+	connStr := os.Getenv("DB_URL")
+	if connStr == "" {
+		log.Fatal("DB_URL is empty")
+	}
+
+	// Connect to database
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	accHandler := handlers.NewAccountHandler(db)
+
 	r := chi.NewRouter()
 	// A good base middleware stack
 	r.Use(middleware.RequestID)
@@ -24,7 +41,7 @@ func main() {
 	})
 	// RESTy routes for "accounts" resource
 	r.Route("/accounts", func(r chi.Router) {
-		r.Post("/", handlers.CreateAccount)                // POST /accounts
+		r.Post("/", accHandler.CreateAccount)              // POST /accounts
 		r.Get("/{account_id}", handlers.GetAccountDetails) // GET /accounts/{account_id}
 	})
 
