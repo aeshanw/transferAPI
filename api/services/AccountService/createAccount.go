@@ -11,10 +11,11 @@ import (
 )
 
 // AccountService defines the methods for interacting with the account service.
-// type AccountService interface {
-// 	// Define methods for interacting with the database
-// 	CreateAccount(ctx context.Context, db *sql.DB, req models.CreateAccountRequest) (*AccountModel, error)
-// }
+type AccountServiceInt interface {
+	// Define methods for interacting with the database
+	CreateAccount(ctx context.Context, db *sql.DB, req models.CreateAccountRequest) error
+	GetAccount(ctx context.Context, db *sql.DB, accountID int64) (*AccountModel, error)
+}
 
 // NewAccountService creates a new instance of the accountService.
 // func NewAccountService(db *sql.DB) AccountService {
@@ -49,18 +50,6 @@ func (am *AccountModel) SetFromRequest(req models.CreateAccountRequest) error {
 	return nil
 }
 
-type DBInt interface {
-	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
-}
-
-// // TxInt defines the interface for the transaction.
-// type TxInt interface {
-// 	Commit() error
-// 	Rollback() error
-// 	QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
-// 	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
-// }
-
 func CreateAccount(ctx context.Context, db *sql.DB, req models.CreateAccountRequest) error {
 
 	account := NewAccountModel()
@@ -72,7 +61,6 @@ func CreateAccount(ctx context.Context, db *sql.DB, req models.CreateAccountRequ
 
 	// Begin a transaction with the specified options
 	txn, err := db.BeginTx(ctx, nil)
-	fmt.Println("TEST!")
 	if err != nil {
 		return fmt.Errorf("txn for createAccount fail:%w", err)
 	}

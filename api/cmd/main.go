@@ -26,7 +26,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	accHandler := handlers.NewAccountHandler(db)
+	accountservice.
+		accHandler := handlers.NewAccountHandler(db)
 
 	r := chi.NewRouter()
 	// A good base middleware stack
@@ -41,8 +42,8 @@ func main() {
 	})
 	// RESTy routes for "accounts" resource
 	r.Route("/accounts", func(r chi.Router) {
-		r.Post("/", accHandler.CreateAccount)              // POST /accounts
-		r.Get("/{account_id}", handlers.GetAccountDetails) // GET /accounts/{account_id}
+		r.Post("/", accHandler.CreateAccount)                // POST /accounts
+		r.Get("/{account_id}", accHandler.GetAccountDetails) // GET /accounts/{account_id}
 	})
 
 	log.Println("API running at :3000 port")

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -9,11 +10,15 @@ import (
 	"os"
 	"testing"
 
+	"aeshanw.com/accountApi/api/mocks"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 // TestCreateAccount tests the CreateAccount handler
 func TestCreateAccount(t *testing.T) {
+	mockDB := new(sql.DB)
+	mockAccountService := new(mocks.MockAccountService)
 	// Test cases
 	tests := []struct {
 		name               string
@@ -77,7 +82,9 @@ func TestCreateAccount(t *testing.T) {
 			// Create a ResponseRecorder to capture the response
 			rr := httptest.NewRecorder()
 
-			ah := NewAccountHandler(nil)
+			mockAccountService.On("CreateAccount", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+
+			ah := NewAccountHandler(mockDB, mockAccountService)
 
 			// Call the handler
 			handler := http.HandlerFunc(ah.CreateAccount)

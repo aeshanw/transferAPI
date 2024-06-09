@@ -19,13 +19,15 @@ import (
 
 // Handlers contains the HTTP handlers and dependencies.
 type AccountHandler struct {
-	db *sql.DB
+	db             *sql.DB
+	accountservice accountservice.AccountServiceInt
 }
 
 // NewAccountHandler creates a new instance of Handlers with the provided dependencies.
-func NewAccountHandler(db *sql.DB) *AccountHandler {
+func NewAccountHandler(db *sql.DB, as accountservice.AccountServiceInt) *AccountHandler {
 	return &AccountHandler{
-		db: db,
+		db:             db,
+		accountservice: as,
 	}
 }
 
@@ -48,7 +50,7 @@ func (ah *AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) 
 	ctx := r.Context()
 
 	//TODO ServiceMethod to Validate & Save Account to DB
-	err := accountservice.CreateAccount(ctx, ah.db, req)
+	err := ah.accountservice.CreateAccount(ctx, ah.db, req)
 	if err != nil {
 		//TODO handle error
 		render.Status(r, http.StatusBadRequest)
