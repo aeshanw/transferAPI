@@ -28,7 +28,21 @@ Ensure the database + API logs seem ok before using POSTMAN.
 
 The API will be running on port 3000
 
+#### Database setup
+The initdb should be automatically executed by postgres-docker-compose onstartup but incase it fails to initialize you can just copy the initdb/init.sql and execute them in your DB client.
+
+#### Running unit-tests in docker
+```
+cd api
+docker build -t my-tester-image -f Dockerfile.tester .
+docker run --rm my-tester-image
+```
+
 ### (Optional) Using local-run
+
+You need to git-clone this folder into your GOPATH e.g `GOPATH/src/aeshanw.com/<this-project-root>` else your go-compiler will not be able to compile or parse the sourcecode.
+
+
 ```
 cd api
 go mod download

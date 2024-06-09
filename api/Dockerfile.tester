@@ -1,0 +1,13 @@
+# Use a base image with the necessary tools for building and running your application
+FROM golang:1.22.2 AS builder
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the source code into the container
+COPY . .
+
+RUN apt-get update && apt-get install -y make
+
+# Run the application
+CMD ["make", "test"]

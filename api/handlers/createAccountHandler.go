@@ -11,12 +11,6 @@ import (
 	"github.com/go-chi/render"
 )
 
-// AccountService defines the methods for interacting with the account service.
-// type AccountService interface {
-// 	// Define methods for interacting with the database
-// 	CreateAccount(ctx context.Context, req models.CreateAccountRequest) (*AccountModel, error)
-// }
-
 // Handlers contains the HTTP handlers and dependencies.
 type AccountHandler struct {
 	db             *sql.DB
