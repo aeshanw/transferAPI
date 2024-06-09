@@ -17,9 +17,3 @@ func (ctr CreateTransactionRequest) Render(w http.ResponseWriter, r *http.Reques
 	// TODO Pre-processing before a response is marshalled and sent across the wire
 	return nil
 }
-
-// {
-// 	"source_account_id": 123,
-// 	"destination_account_id": 456,
-// 	"amount": "100.12345"
-// 	}
