@@ -10,6 +10,7 @@ import (
 
 	"aeshanw.com/accountApi/api/handlers"
 	accountservice "aeshanw.com/accountApi/api/services/AccountService"
+	transactionservice "aeshanw.com/accountApi/api/services/TransactionService"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -30,6 +31,9 @@ func main() {
 	as := accountservice.NewAccountService()
 	accHandler := handlers.NewAccountHandler(db, as)
 
+	ts := transactionservice.NewTransactionService()
+	trHandler := handlers.NewTransactionHandler(db, ts)
+
 	r := chi.NewRouter()
 	// A good base middleware stack
 	r.Use(middleware.RequestID)
@@ -45,6 +49,10 @@ func main() {
 	r.Route("/accounts", func(r chi.Router) {
 		r.Post("/", accHandler.CreateAccount)                // POST /accounts
 		r.Get("/{account_id}", accHandler.GetAccountDetails) // GET /accounts/{account_id}
+	})
+
+	r.Route("/transactions", func(r chi.Router) {
+		r.Post("/", trHandler.CreateTransaction) // POST /transactions
 	})
 
 	log.Println("API running at :3000 port")

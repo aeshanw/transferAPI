@@ -45,14 +45,11 @@ func (ah *AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	fmt.Printf("req: %v\n", req)
-
 	ctx := r.Context()
 
-	//TODO ServiceMethod to Validate & Save Account to DB
+	//ServiceMethod to Validate & Save Account to DB
 	err := ah.accountservice.CreateAccount(ctx, ah.db, req)
 	if err != nil {
-		//TODO handle error
 		render.Status(r, http.StatusBadRequest)
 		render.Render(w, r, NewErrorResponse(ErrBadRequest, err.Error()))
 		return
