@@ -9,6 +9,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"aeshanw.com/accountApi/api/handlers"
+	accountservice "aeshanw.com/accountApi/api/services/AccountService"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -26,8 +27,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	accountservice.
-		accHandler := handlers.NewAccountHandler(db)
+	as := accountservice.NewAccountService()
+	accHandler := handlers.NewAccountHandler(db, as)
 
 	r := chi.NewRouter()
 	// A good base middleware stack

@@ -50,7 +50,13 @@ func (am *AccountModel) SetFromRequest(req models.CreateAccountRequest) error {
 	return nil
 }
 
-func CreateAccount(ctx context.Context, db *sql.DB, req models.CreateAccountRequest) error {
+type AccountService struct{}
+
+func NewAccountService() *AccountService {
+	return &AccountService{}
+}
+
+func (as *AccountService) CreateAccount(ctx context.Context, db *sql.DB, req models.CreateAccountRequest) error {
 
 	account := NewAccountModel()
 	if err := account.SetFromRequest(req); err != nil {

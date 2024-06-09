@@ -82,8 +82,10 @@ func TestCreateAccount(t *testing.T) {
 		InitialBalance: "100.0",
 	}
 
+	as := NewAccountService()
+
 	// Call the CreateAccount function
-	err = CreateAccount(ctx, db, req)
+	err = as.CreateAccount(ctx, db, req)
 
 	// Assertions
 	assert.NoError(t, err)
