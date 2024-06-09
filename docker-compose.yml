@@ -1,6 +1,14 @@
 version: '3.9'
 
 services:
+  app:
+    build:
+      context: ./api  # Change the build context to the API folder
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DB_URL: "postgresql://tripleA:test@postgres:5432/tripleA_db?sslmode=disable"
   postgres:
     image: postgres:14-alpine
     ports:
