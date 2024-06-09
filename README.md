@@ -14,9 +14,37 @@ A postgres database will be used to maintain transaction logs and account states
 ## Installation
 
 Assuming:
-- Docker installed locally
+- Docker installed locally --> https://docs.docker.com/desktop/install/mac-install/
+- Docker-compose should be able to run-locally (installed along with Docker-engine)
 
-## API Specifications
+Note: if you wish to run the golang-application code directly (i.e local-compile/run) you'll need `go 1.22.2`
+
+### Using Docker
+While in the project-root folder
+```
+docker-compose up
+```
+Ensure the database + API logs seem ok before using POSTMAN.
+
+The API will be running on port 3000
+
+### (Optional) Using local-run
+```
+cd api
+go mod download
+make update-vendor
+make run
+```
+
+#### Test coverage
+```
+cd api
+make test
+```
+
+
+
+## API Specifications/Requirement
 
 ### Account Creation Endpoint (POST)
 Implement an endpoint /accounts that accepts JSON-formatted account ID and account initial balance
@@ -69,5 +97,5 @@ E.g
 
 - All HTTP response-handling & transformation of biz-logic responses to HTTP Errors or statuses will be done in this layer
 
-### Middleware
-Any router middleware common to many routes will be kept here for handling HTTP request/responses.
+## Models
+Any common shared structs/request models/biz-models that need to be shared cross services/handlers
