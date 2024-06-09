@@ -24,6 +24,8 @@ Note: if you wish to run the golang-application code directly (i.e local-compile
 ### Database setup
 The initdb should be automatically executed by postgres-docker-compose onstartup but incase it fails to initialize you can just copy the `<project-root>/initdb/init.sql` and execute them in your DB client.
 
+https://github.com/aeshanw/transferAPI/blob/master/initdb/init.sql
+
 ### Running unit-tests in docker
 ```
 cd api
