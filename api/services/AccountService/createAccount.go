@@ -3,8 +3,11 @@ package account_service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"log"
 	"strconv"
+	"sync"
 	"time"
 
 	"aeshanw.com/accountApi/api/models"
@@ -16,11 +19,6 @@ type AccountServiceInt interface {
 	CreateAccount(ctx context.Context, db *sql.DB, req models.CreateAccountRequest) error
 	GetAccount(ctx context.Context, db *sql.DB, accountID int64) (*AccountModel, error)
 }
-
-// NewAccountService creates a new instance of the accountService.
-// func NewAccountService(db *sql.DB) AccountService {
-// 	return &accountService{db: db}
-// }
 
 type AccountModel struct {
 	ID        int64
@@ -38,7 +36,7 @@ func (am *AccountModel) SetFromRequest(req models.CreateAccountRequest) error {
 
 	floatIntialBalance, err := strconv.ParseFloat(req.InitialBalance, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("invalid initial_balance format due to:%w", err)
 	}
 
 	if floatIntialBalance < 0 {
@@ -56,7 +54,13 @@ func NewAccountService() *AccountService {
 	return &AccountService{}
 }
 
+// Mutex is required to handle race-conditions where 2 threads compete to UPDATE a account row in the DB
+var mutex sync.Mutex
+
 func (as *AccountService) CreateAccount(ctx context.Context, db *sql.DB, req models.CreateAccountRequest) error {
+	//Mutex-lock to avoid race-cases
+	mutex.Lock()
+	defer mutex.Unlock()
 
 	account := NewAccountModel()
 	if err := account.SetFromRequest(req); err != nil {
@@ -81,15 +85,15 @@ func (as *AccountService) CreateAccount(ctx context.Context, db *sql.DB, req mod
 		return fmt.Errorf("check for existing account:%w", err)
 	}
 
-	fmt.Println("count done!")
+	log.Println("count done!")
 
 	if count > 0 {
 		//No existing account must exist
 		txn.Rollback()
-		return fmt.Errorf("account-count != 1 count:%d", count)
+		return errors.New("account already exists")
 	}
 
-	fmt.Println("count check ok!")
+	log.Println("count check ok!")
 
 	//Race conditions unlikely for this resource as the unique PK index ensures the 2nd try will fail hence data-consistency is maintained
 	if _, err = txn.ExecContext(ctx, sqlInsertNewAccount, account.ID, account.Balance); err != nil {

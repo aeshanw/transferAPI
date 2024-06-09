@@ -43,7 +43,7 @@ func main() {
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome")) //TODO consider removing this unused route after testing
+		w.Write([]byte("welcome")) //This is just to test the site-uptime
 	})
 	// RESTy routes for "accounts" resource
 	r.Route("/accounts", func(r chi.Router) {

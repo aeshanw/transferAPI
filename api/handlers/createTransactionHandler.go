@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"aeshanw.com/accountApi/api/models"
@@ -32,8 +31,6 @@ func (th *TransactionHandler) CreateTransaction(w http.ResponseWriter, r *http.R
 		render.Render(w, r, NewDefaultErrorResponse(ErrBadRequest))
 		return
 	}
-
-	fmt.Printf("req: %v\n", req)
 
 	if errRes := ValidateCreateTransactionRequest(req); errRes != nil {
 		render.Status(r, http.StatusBadRequest)

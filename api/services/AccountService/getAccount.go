@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 )
 
 func (as *AccountService) GetAccount(ctx context.Context, db *sql.DB, accountID int64) (*AccountModel, error) {
@@ -18,7 +19,7 @@ func (as *AccountService) GetAccount(ctx context.Context, db *sql.DB, accountID 
 		return nil, err
 	}
 
-	fmt.Printf("account: %v\n", account)
+	log.Printf("account: %v\n", account)
 
 	return &account, nil
 }

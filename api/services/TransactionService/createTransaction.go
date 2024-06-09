@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"sync"
@@ -98,7 +99,7 @@ func (ts *TransactionService) CreateTransaction(ctx context.Context, db *sql.DB,
 		return nil, fmt.Errorf("check for existing account:%w", err)
 	}
 
-	fmt.Println("count done!")
+	log.Println("count done!")
 
 	if count != 2 {
 		//Both accounts must exist
@@ -106,7 +107,7 @@ func (ts *TransactionService) CreateTransaction(ctx context.Context, db *sql.DB,
 		return nil, fmt.Errorf("account-count != 2 count:%d", count)
 	}
 
-	fmt.Println("count check ok!")
+	log.Println("count check ok!")
 
 	//Check SourceBalance
 	var sourceAccountBalance float64
@@ -119,6 +120,7 @@ func (ts *TransactionService) CreateTransaction(ctx context.Context, db *sql.DB,
 
 	if finalSourceAccountBalance < 0 {
 		//balance cannot fall below 0
+		txn.Rollback()
 		return nil, fmt.Errorf("source account has insufficent funds: finalSourceAccountBalance:%v", finalSourceAccountBalance)
 	}
 

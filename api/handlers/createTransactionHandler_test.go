@@ -73,6 +73,31 @@ func TestCreateTransaction(t *testing.T) {
 			expectedBody:   "{\"status\":400,\"detail\":\"bad_request\",\"message\":\"invalid SourceAccountID\"}", // Expected error message for invalid body
 		},
 		{
+			name: "invalid request body - invalid destination",
+			requestBody: models.CreateTransactionRequest{
+				SourceAccountID:      1,
+				DestinationAccountID: -3,
+				Amount:               "50.00",
+			},
+			mockSetup: func(m *MockTransactionService) {
+				// No mock setup needed for this case
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "{\"status\":400,\"detail\":\"bad_request\",\"message\":\"invalid DestinationAccountID\"}", // Expected error message for invalid body
+		},
+		{
+			name: "invalid request body - missing amount",
+			requestBody: models.CreateTransactionRequest{
+				SourceAccountID:      1,
+				DestinationAccountID: 2,
+			},
+			mockSetup: func(m *MockTransactionService) {
+				// No mock setup needed for this case
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "{\"status\":400,\"detail\":\"bad_request\",\"message\":\"Amount is empty\"}", // Expected error message for invalid body
+		},
+		{
 			name: "service error",
 			requestBody: models.CreateTransactionRequest{
 				SourceAccountID:      1,

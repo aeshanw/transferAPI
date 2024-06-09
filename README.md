@@ -9,16 +9,29 @@ A postgres database will be used to maintain transaction logs and account states
 ## Assumptions
 
 - Consider the currency is the same for all accounts.
-- No need to implement authn or authz
+- No need to implement authn or authz (i.e No authentication/authorization)
+- We aim for high consistency hence some lag in transfers are acceptable to ensure high consistency (i.e CAP theorem - something needs to be sacrificed https://en.wikipedia.org/wiki/CAP_theorem)
+- Negative balance is not supported (i.e no bank-like overdrafts)
 
 ## Installation
 
-Assuming:
+Requirement:
 - Docker installed locally --> https://docs.docker.com/desktop/install/mac-install/
 - Docker-compose should be able to run-locally (installed along with Docker-engine)
 
 Note: if you wish to run the golang-application code directly (i.e local-compile/run) you'll need `go 1.22.2`
 
+### Database setup
+The initdb should be automatically executed by postgres-docker-compose onstartup but incase it fails to initialize you can just copy the `<project-root>/initdb/init.sql` and execute them in your DB client.
+
+### Running unit-tests in docker
+```
+cd api
+docker build -t my-tester-image -f Dockerfile.tester .
+docker run --rm my-tester-image
+```
+
+## Run
 ### Using Docker
 While in the project-root folder
 ```
@@ -28,14 +41,56 @@ Ensure the database + API logs seem ok before using POSTMAN.
 
 The API will be running on port 3000
 
-#### Database setup
-The initdb should be automatically executed by postgres-docker-compose onstartup but incase it fails to initialize you can just copy the initdb/init.sql and execute them in your DB client.
+You should be able to acces it via POSTMAN
 
-#### Running unit-tests in docker
+#### Create new account
+
+`POST http://localhost:3000/accounts`
+
+With Payload
 ```
-cd api
-docker build -t my-tester-image -f Dockerfile.tester .
-docker run --rm my-tester-image
+{
+    "account_id": 124,
+    "initial_balance": "100.13344"
+}
+```
+
+Should return 201 response on success
+
+#### Get account details
+`GET http://localhost:3000/accounts/124`
+
+#### Transact between 2 accounts
+`POST http://localhost:3000/transactions`
+With Payload
+```
+{
+    "source_account_id": 124,
+    "destination_account_id": 123,
+    "amount": "50.12345"
+}
+```
+
+You should then be able to query the 123 account via
+`GET http://localhost:3000/accounts/123`
+
+And verify the balance has been credited accurately (likewise 124 should be debited)
+Example:
+```
+{
+    "account_id": 123,
+    "balance": "150.35000"
+}
+```
+
+debiting beyond the source-account's balance will result in a 400 error 
+Example:
+```
+{
+    "status": 400,
+    "detail": "bad_request",
+    "message": "source account has insufficent funds: finalSourceAccountBalance:-49.89345000000001"
+}
 ```
 
 ### (Optional) Using local-run
@@ -55,7 +110,6 @@ make run
 cd api
 make test
 ```
-
 
 
 ## API Specifications/Requirement
